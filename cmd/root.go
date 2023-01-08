@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/AliakseiM/ltv-predict/internal/flags"
+	"github.com/AliakseiM/ltv-predict/internal/models"
 )
 
 var (
@@ -19,9 +20,24 @@ var rootCmd = &cobra.Command{
 	Use:   "ltv-predict",
 	Short: "A brief description",
 	Long:  `A longer description`,
-	RunE: func(cmd *cobra.Command, _ []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		if err := flags.ValidateValues(model, source, aggregate); err != nil {
 			return err
+		}
+
+		switch models.SourceType(source) {
+		case models.SourceTypeJSON:
+			err := models.PrintJSONInput()
+			if err != nil {
+				return err
+			}
+		case models.SourceTypeCSV:
+			err := models.PrintCSVInput()
+			if err != nil {
+				return err
+			}
+		default:
+			return nil
 		}
 
 		return nil
