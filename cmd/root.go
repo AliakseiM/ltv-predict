@@ -1,16 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
-)
 
-const (
-	flagModel     = "model"
-	flagSource    = "source"
-	flagAggregate = "aggregate"
+	"github.com/AliakseiM/ltv-predict/internal/flags"
 )
 
 var (
@@ -24,10 +19,11 @@ var rootCmd = &cobra.Command{
 	Use:   "ltv-predict",
 	Short: "A brief description",
 	Long:  `A longer description`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println(model)
-		fmt.Println(source)
-		fmt.Println(aggregate)
+	RunE: func(cmd *cobra.Command, _ []string) error {
+		if err := flags.ValidateValues(model, source, aggregate); err != nil {
+			return err
+		}
+
 		return nil
 	},
 }
@@ -42,18 +38,18 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().StringVarP(&model, flagModel, "m", "", "Model")
-	if err := rootCmd.MarkFlagRequired(flagModel); err != nil {
+	rootCmd.Flags().StringVarP(&model, flags.Model.String(), flags.Model.Shorthand(), "", "Model")
+	if err := rootCmd.MarkFlagRequired(flags.Model.String()); err != nil {
 		cobra.CheckErr(err)
 	}
 
-	rootCmd.Flags().StringVarP(&source, flagSource, "s", "", "CSV or JSON data")
-	if err := rootCmd.MarkFlagRequired(flagSource); err != nil {
+	rootCmd.Flags().StringVarP(&source, flags.Source.String(), flags.Source.Shorthand(), "", "CSV or JSON data")
+	if err := rootCmd.MarkFlagRequired(flags.Source.String()); err != nil {
 		cobra.CheckErr(err)
 	}
 
-	rootCmd.Flags().StringVarP(&aggregate, flagAggregate, "a", "", "grouping by country or campaign")
-	if err := rootCmd.MarkFlagRequired(flagAggregate); err != nil {
+	rootCmd.Flags().StringVarP(&aggregate, flags.Aggregate.String(), flags.Aggregate.Shorthand(), "", "grouping by country or campaign")
+	if err := rootCmd.MarkFlagRequired(flags.Aggregate.String()); err != nil {
 		cobra.CheckErr(err)
 	}
 }
