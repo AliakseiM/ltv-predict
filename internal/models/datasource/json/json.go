@@ -73,8 +73,8 @@ func (ds *Datasource) GroupBy(col models.AggregateType) {
 func (ds *Datasource) Prepare() (map[string][]float64, error) {
 	prepared := make(map[string][]float64, len(ds.grouped))
 
-	for country, data := range ds.grouped {
-		prepared[country] = ds.getAverageWeighted(data)
+	for group, data := range ds.grouped {
+		prepared[group] = ds.getAverageWeighted(data)
 	}
 
 	return prepared, nil
