@@ -1,20 +1,27 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/AliakseiM/ltv-predict/internal/datasource/csv"
 	"github.com/AliakseiM/ltv-predict/internal/datasource/json"
 	"github.com/AliakseiM/ltv-predict/internal/flags"
 	"github.com/AliakseiM/ltv-predict/internal/models"
+	"github.com/AliakseiM/ltv-predict/internal/predictor/linearRegression"
 )
 
 var (
 	model     string
 	source    string
 	aggregate string
+)
+
+const (
+	day = 60
 )
 
 const (
@@ -61,17 +68,17 @@ var rootCmd = &cobra.Command{
 
 		ds.GroupBy(models.AggregateType(aggregate))
 
-		_, err := ds.Prepare()
+		prepared, err := ds.Prepare()
 		if err != nil {
 			return err
 		}
 
 		// TODO: predict
 
-		//var predictor Predictor
+		var predictor Predictor
 		switch models.PredictionModel(model) {
 		case models.LinearRegression:
-			// TODO
+			predictor = linearRegression.New()
 		case models.ExponentialSmoothing:
 			// TODO
 		default:
@@ -79,25 +86,25 @@ var rootCmd = &cobra.Command{
 			return nil
 		}
 
-		//gr := new(errgroup.Group)
-		//
-		//for group, data := range prepared {
-		//	group, data := group, data
-		//	gr.Go(func() error {
-		//		predicted, err := models.PredictForDayArr(data, 60)
-		//		if err != nil {
-		//			return err
-		//		}
-		//
-		//		fmt.Printf("%s: %.2f\n", group, predicted)
-		//
-		//		return nil
-		//	})
-		//}
-		//
-		//if err := gr.Wait(); err != nil {
-		//	return err
-		//}
+		gr := new(errgroup.Group)
+
+		for group, data := range prepared {
+			group, data := group, data
+			gr.Go(func() error {
+				predicted, err := predictor.PredictForDay(data, 60)
+				if err != nil {
+					return err
+				}
+
+				fmt.Printf("%s: %.2f\n", group, predicted)
+
+				return nil
+			})
+		}
+
+		if err := gr.Wait(); err != nil {
+			return err
+		}
 
 		return nil
 	},
