@@ -51,7 +51,11 @@ type Datasource struct {
 }
 
 func NewDatasource(filePath string) *Datasource {
-	return &Datasource{filePath: filePath}
+	return &Datasource{
+		filePath: filePath,
+		data:     make([]*csvData, 0),
+		grouped:  make(map[string][]*csvData),
+	}
 }
 
 var _ datasource.Datasource = &Datasource{}
@@ -96,13 +100,13 @@ func (ds *Datasource) Prepare() (map[string][]float64, error) {
 	prepared := make(map[string][]float64, len(ds.grouped))
 
 	for group, data := range ds.grouped {
-		prepared[group] = ds.getAverage(data)
+		prepared[group] = ds.getAverageRevenue(data)
 	}
 
 	return prepared, nil
 }
 
-func (ds *Datasource) getAverage(data []*csvData) []float64 {
+func (ds *Datasource) getAverageRevenue(data []*csvData) []float64 {
 	revenues := make([][]float64, 0, len(data))
 
 	for _, d := range data {
