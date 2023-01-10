@@ -24,9 +24,13 @@ const (
 
 type Datasource interface {
 	LoadData() error
-	GroupBy(col models.AggregateType)
+	GroupBy(models.AggregateType)
 	Prepare() (map[string][]float64, error)
 	Print()
+}
+
+type Predictor interface {
+	PredictForDay(data []float64, day int) (float64, error)
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -41,7 +45,6 @@ var rootCmd = &cobra.Command{
 
 		var ds Datasource
 
-		// TODO: load data from source
 		switch models.SourceType(source) {
 		case models.SourceTypeJSON:
 			ds = json.NewDatasource(jsonFile)
@@ -56,16 +59,45 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		// TODO: group data
 		ds.GroupBy(models.AggregateType(aggregate))
 
-		// TODO: prepare data
 		_, err := ds.Prepare()
 		if err != nil {
 			return err
 		}
 
 		// TODO: predict
+
+		//var predictor Predictor
+		switch models.PredictionModel(model) {
+		case models.LinearRegression:
+			// TODO
+		case models.ExponentialSmoothing:
+			// TODO
+		default:
+			// TODO: return error
+			return nil
+		}
+
+		//gr := new(errgroup.Group)
+		//
+		//for group, data := range prepared {
+		//	group, data := group, data
+		//	gr.Go(func() error {
+		//		predicted, err := models.PredictForDayArr(data, 60)
+		//		if err != nil {
+		//			return err
+		//		}
+		//
+		//		fmt.Printf("%s: %.2f\n", group, predicted)
+		//
+		//		return nil
+		//	})
+		//}
+		//
+		//if err := gr.Wait(); err != nil {
+		//	return err
+		//}
 
 		return nil
 	},

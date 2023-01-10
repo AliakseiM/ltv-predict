@@ -23,13 +23,15 @@ func (f Flag) Shorthand() string {
 }
 
 var (
-	//errUnsupportedModel     = errors.New("unsupported model")
+	errUnsupportedModel     = errors.New("unsupported model")
 	errUnsupportedSource    = errors.New("unsupported source")
 	errUnsupportedAggregate = errors.New("unsupported aggregate")
 )
 
 func ValidateValues(model, source, aggregate string) error {
-	// TODO: validate model
+	if m := models.PredictionModel(model); !m.IsValid() {
+		return errUnsupportedModel
+	}
 
 	if s := models.SourceType(source); !s.IsValid() {
 		return errUnsupportedSource
