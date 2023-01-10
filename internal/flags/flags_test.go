@@ -50,12 +50,14 @@ func TestValidateValues(t *testing.T) {
 		model, source, aggregate string
 		expectedErr              error
 	}{
-		{"", "json", "country", nil},
-		{"", "csv", "campaign", nil},
-		{"", "invalid", "country", errUnsupportedSource},
-		{"", "invalid", "campaign", errUnsupportedSource},
-		{"", "json", "invalid", errUnsupportedAggregate},
-		{"", "csv", "invalid", errUnsupportedAggregate},
+		{"lr", "json", "country", nil},
+		{"es", "csv", "campaign", nil},
+		{"invalid", "json", "country", errUnsupportedModel},
+		{"invalid", "csv", "campaign", errUnsupportedModel},
+		{"lr", "invalid", "country", errUnsupportedSource},
+		{"es", "invalid", "campaign", errUnsupportedSource},
+		{"lr", "json", "invalid", errUnsupportedAggregate},
+		{"es", "csv", "invalid", errUnsupportedAggregate},
 	}
 	for _, tc := range testCases {
 		t.Run(fmt.Sprintf("%v %v %v", tc.model, tc.source, tc.aggregate), func(t *testing.T) {
