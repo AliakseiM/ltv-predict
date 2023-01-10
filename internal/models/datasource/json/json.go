@@ -71,5 +71,43 @@ func (ds *Datasource) GroupBy(col models.AggregateType) {
 }
 
 func (ds *Datasource) Prepare() (map[string][]float64, error) {
-	return nil, nil
+	prepared := make(map[string][]float64, len(ds.grouped))
+
+	for country, data := range ds.grouped {
+		prepared[country] = ds.getAverageWeighted(data)
+	}
+
+	return prepared, nil
+}
+
+func (ds *Datasource) getAverageWeighted(data []*models.JSONData) []float64 {
+	weightedRevenuesByDay := make(map[int][]float64)
+	var weightSum float64
+
+	for _, d := range data {
+
+		for day, rev := range d.GetRevenues() {
+			weightedRevenuesByDay[day] = append(weightedRevenuesByDay[day], rev*float64(d.Users))
+		}
+
+		weightSum += float64(d.Users)
+
+	}
+
+	avgWeightedByDay := make(map[int]float64)
+
+	for day, wrbd := range weightedRevenuesByDay {
+		var sum float64
+		for _, v := range wrbd {
+			sum += v
+		}
+		avgWeightedByDay[day] = sum / weightSum
+	}
+
+	res := make([]float64, len(avgWeightedByDay))
+	for i, v := range avgWeightedByDay {
+		res[i] = v
+	}
+
+	return res
 }
