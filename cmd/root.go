@@ -7,6 +7,8 @@ import (
 
 	"github.com/AliakseiM/ltv-predict/internal/flags"
 	"github.com/AliakseiM/ltv-predict/internal/models"
+	"github.com/AliakseiM/ltv-predict/internal/models/datasource/csv"
+	"github.com/AliakseiM/ltv-predict/internal/models/datasource/json"
 )
 
 var (
@@ -14,6 +16,18 @@ var (
 	source    string
 	aggregate string
 )
+
+const (
+	jsonFile = "data/test_data.json"
+	csvFile  = "data/test_data.csv"
+)
+
+type Datasource interface {
+	LoadData() error
+	GroupBy(col models.AggregateType)
+	Prepare() (map[string][]float64, error)
+	Print()
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -25,20 +39,37 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		var ds Datasource
+
+		// TODO: load data from source
 		switch models.SourceType(source) {
 		case models.SourceTypeJSON:
+			ds = json.NewDatasource(jsonFile)
 			err := models.PrintJSONInput()
 			if err != nil {
 				return err
 			}
 		case models.SourceTypeCSV:
-			err := models.PrintCSVInput()
-			if err != nil {
-				return err
-			}
+			ds = csv.NewDatasource(csvFile)
+
+			//err := models.PrintCSVInput()
+			//if err != nil {
+			//	return err
+			//}
 		default:
+			// TODO: return error
 			return nil
 		}
+
+		if err := ds.LoadData(); err != nil {
+			return err
+		}
+
+		ds.GroupBy(models.AggregateType(aggregate))
+
+		// TODO: group data
+
+		// TODO: predict
 
 		return nil
 	},
