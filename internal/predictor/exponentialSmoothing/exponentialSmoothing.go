@@ -1,5 +1,9 @@
 package exponentialSmoothing
 
+import (
+	"github.com/AliakseiM/ltv-predict/internal/predictor"
+)
+
 type ExponentialSmoothing struct {
 	alpha, beta float64
 }
@@ -10,6 +14,8 @@ func New(alpha, beta float64) *ExponentialSmoothing {
 		beta:  beta,
 	}
 }
+
+var _ predictor.Predictor = &ExponentialSmoothing{}
 
 func (es *ExponentialSmoothing) PredictForDay(data []float64, day int) (float64, error) {
 	level := []float64{data[0]}

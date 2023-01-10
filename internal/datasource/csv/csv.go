@@ -5,6 +5,7 @@ import (
 
 	"github.com/gocarina/gocsv"
 
+	"github.com/AliakseiM/ltv-predict/internal/datasource"
 	"github.com/AliakseiM/ltv-predict/internal/models"
 )
 
@@ -52,6 +53,8 @@ type Datasource struct {
 func NewDatasource(filePath string) *Datasource {
 	return &Datasource{filePath: filePath}
 }
+
+var _ datasource.Datasource = &Datasource{}
 
 func (ds *Datasource) LoadData() error {
 	f, err := os.Open(ds.filePath)

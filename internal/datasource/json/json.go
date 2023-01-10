@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/AliakseiM/ltv-predict/internal/datasource"
 	"github.com/AliakseiM/ltv-predict/internal/models"
 )
 
@@ -45,6 +46,8 @@ func NewDatasource(filePath string) *Datasource {
 		grouped:  make(map[string][]*jsonData),
 	}
 }
+
+var _ datasource.Datasource = &Datasource{}
 
 func (ds *Datasource) LoadData() error {
 	f, err := os.Open(ds.filePath)
