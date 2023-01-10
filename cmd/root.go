@@ -17,19 +17,19 @@ import (
 	"github.com/AliakseiM/ltv-predict/internal/predictor/linearRegression"
 )
 
+const (
+	jsonFile = "data/test_data.json"
+	csvFile  = "data/test_data.csv"
+
+	day = 60
+
+	resultLineFormat = "%s: %.2f\n"
+)
+
 var (
 	model     string
 	source    string
 	aggregate string
-)
-
-const (
-	day = 60
-)
-
-const (
-	jsonFile = "data/test_data.json"
-	csvFile  = "data/test_data.csv"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -86,7 +86,7 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
-				fmt.Printf("%s: %.2f\n", group, predicted)
+				fmt.Printf(resultLineFormat, group, predicted)
 
 				return nil
 			})
