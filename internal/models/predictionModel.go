@@ -1,9 +1,5 @@
 package models
 
-import (
-	"fmt"
-)
-
 type PredictionModel string
 
 const (
@@ -18,10 +14,8 @@ func (pm PredictionModel) String() string {
 func (pm PredictionModel) IsValid() bool {
 	switch pm {
 	case LinearRegression:
-		fmt.Println("linear regression")
 		return true
 	case ExponentialSmoothing:
-		fmt.Println("exponential smoothing")
 		return true
 	default:
 		return false

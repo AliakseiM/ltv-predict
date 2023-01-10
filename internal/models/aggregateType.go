@@ -1,9 +1,5 @@
 package models
 
-import (
-	"fmt"
-)
-
 type AggregateType string
 
 const (
@@ -18,10 +14,8 @@ func (at AggregateType) String() string {
 func (at AggregateType) IsValid() bool {
 	switch at {
 	case AggregateTypeCountry:
-		fmt.Println("group by country")
 		return true
 	case AggregateTypeCampaign:
-		fmt.Println("group by campaign")
 		return true
 	default:
 		return false

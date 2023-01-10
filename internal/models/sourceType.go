@@ -1,9 +1,5 @@
 package models
 
-import (
-	"fmt"
-)
-
 type SourceType string
 
 const (
@@ -18,10 +14,8 @@ func (sc SourceType) String() string {
 func (sc SourceType) IsValid() bool {
 	switch sc {
 	case SourceTypeCSV:
-		fmt.Println("csv source")
 		return true
 	case SourceTypeJSON:
-		fmt.Println("json source")
 		return true
 	default:
 		return false
