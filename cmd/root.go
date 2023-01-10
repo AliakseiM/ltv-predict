@@ -35,8 +35,15 @@ var (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "ltv-predict",
-	Short: "A brief description",
-	Long:  `A longer description`,
+	Short: "Utility for predicting 60s day revenue",
+	Long: `Utility for predicting 60s day revenue.
+
+Supports input data in CSV or JSON formats.
+Supported models:
+	- linear regression - lr
+	- exponential smoothing (Holt's linear trend) - es
+Grouping is available by country or campaign
+`,
 	RunE: func(_ *cobra.Command, _ []string) error {
 		if err := flags.ValidateValues(model, source, aggregate); err != nil {
 			return err
@@ -110,17 +117,17 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().StringVarP(&model, flags.Model.String(), flags.Model.Shorthand(), "", "Model")
+	rootCmd.Flags().StringVarP(&model, flags.Model.String(), flags.Model.Shorthand(), "", "lr | es")
 	if err := rootCmd.MarkFlagRequired(flags.Model.String()); err != nil {
 		cobra.CheckErr(err)
 	}
 
-	rootCmd.Flags().StringVarP(&source, flags.Source.String(), flags.Source.Shorthand(), "", "CSV or JSON data")
+	rootCmd.Flags().StringVarP(&source, flags.Source.String(), flags.Source.Shorthand(), "", "json | csv")
 	if err := rootCmd.MarkFlagRequired(flags.Source.String()); err != nil {
 		cobra.CheckErr(err)
 	}
 
-	rootCmd.Flags().StringVarP(&aggregate, flags.Aggregate.String(), flags.Aggregate.Shorthand(), "", "grouping by country or campaign")
+	rootCmd.Flags().StringVarP(&aggregate, flags.Aggregate.String(), flags.Aggregate.Shorthand(), "", "country | campaign")
 	if err := rootCmd.MarkFlagRequired(flags.Aggregate.String()); err != nil {
 		cobra.CheckErr(err)
 	}
