@@ -7,10 +7,12 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 
+	"github.com/AliakseiM/ltv-predict/internal/datasource"
 	"github.com/AliakseiM/ltv-predict/internal/datasource/csv"
 	"github.com/AliakseiM/ltv-predict/internal/datasource/json"
 	"github.com/AliakseiM/ltv-predict/internal/flags"
 	"github.com/AliakseiM/ltv-predict/internal/models"
+	"github.com/AliakseiM/ltv-predict/internal/predictor"
 	"github.com/AliakseiM/ltv-predict/internal/predictor/exponentialSmoothing"
 	"github.com/AliakseiM/ltv-predict/internal/predictor/linearRegression"
 )
@@ -30,16 +32,6 @@ const (
 	csvFile  = "data/test_data.csv"
 )
 
-type Datasource interface {
-	LoadData() error
-	GroupBy(models.AggregateType)
-	Prepare() (map[string][]float64, error)
-}
-
-type Predictor interface {
-	PredictForDay(data []float64, day int) (float64, error)
-}
-
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "ltv-predict",
@@ -50,7 +42,7 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		var ds Datasource
+		var ds datasource.Datasource
 
 		switch models.SourceType(source) {
 		case models.SourceTypeJSON:
@@ -73,12 +65,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		var predictor Predictor
+		var p predictor.Predictor
 		switch models.PredictionModel(model) {
 		case models.LinearRegression:
-			predictor = linearRegression.New()
+			p = linearRegression.New()
 		case models.ExponentialSmoothing:
-			predictor = exponentialSmoothing.New(0.5, 0.4)
+			p = exponentialSmoothing.New(0.5, 0.4)
 		default:
 			// TODO: return error
 			return nil
@@ -89,7 +81,7 @@ var rootCmd = &cobra.Command{
 		for group, data := range prepared {
 			group, data := group, data
 			gr.Go(func() error {
-				predicted, err := predictor.PredictForDay(data, 60)
+				predicted, err := p.PredictForDay(data, day)
 				if err != nil {
 					return err
 				}

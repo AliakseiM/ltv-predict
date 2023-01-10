@@ -2,6 +2,8 @@ package linearRegression
 
 import (
 	"github.com/sajari/regression"
+
+	"github.com/AliakseiM/ltv-predict/internal/predictor"
 )
 
 type LinearRegression struct{}
@@ -9,6 +11,8 @@ type LinearRegression struct{}
 func New() *LinearRegression {
 	return &LinearRegression{}
 }
+
+var _ predictor.Predictor = &LinearRegression{}
 
 func (LinearRegression) PredictForDay(data []float64, day int) (float64, error) {
 	r := new(regression.Regression)
