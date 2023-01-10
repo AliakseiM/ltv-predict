@@ -34,7 +34,6 @@ type Datasource interface {
 	LoadData() error
 	GroupBy(models.AggregateType)
 	Prepare() (map[string][]float64, error)
-	Print()
 }
 
 type Predictor interface {
