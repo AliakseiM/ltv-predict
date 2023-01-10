@@ -5,10 +5,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/AliakseiM/ltv-predict/internal/datasource/csv"
+	"github.com/AliakseiM/ltv-predict/internal/datasource/json"
 	"github.com/AliakseiM/ltv-predict/internal/flags"
 	"github.com/AliakseiM/ltv-predict/internal/models"
-	"github.com/AliakseiM/ltv-predict/internal/models/datasource/csv"
-	"github.com/AliakseiM/ltv-predict/internal/models/datasource/json"
 )
 
 var (
@@ -45,17 +45,8 @@ var rootCmd = &cobra.Command{
 		switch models.SourceType(source) {
 		case models.SourceTypeJSON:
 			ds = json.NewDatasource(jsonFile)
-			err := models.PrintJSONInput()
-			if err != nil {
-				return err
-			}
 		case models.SourceTypeCSV:
 			ds = csv.NewDatasource(csvFile)
-
-			//err := models.PrintCSVInput()
-			//if err != nil {
-			//	return err
-			//}
 		default:
 			// TODO: return error
 			return nil
@@ -65,9 +56,14 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
+		// TODO: group data
 		ds.GroupBy(models.AggregateType(aggregate))
 
-		// TODO: group data
+		// TODO: prepare data
+		_, err := ds.Prepare()
+		if err != nil {
+			return err
+		}
 
 		// TODO: predict
 
