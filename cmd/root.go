@@ -11,6 +11,7 @@ import (
 	"github.com/AliakseiM/ltv-predict/internal/datasource/json"
 	"github.com/AliakseiM/ltv-predict/internal/flags"
 	"github.com/AliakseiM/ltv-predict/internal/models"
+	"github.com/AliakseiM/ltv-predict/internal/predictor/exponentialSmoothing"
 	"github.com/AliakseiM/ltv-predict/internal/predictor/linearRegression"
 )
 
@@ -73,14 +74,12 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 
-		// TODO: predict
-
 		var predictor Predictor
 		switch models.PredictionModel(model) {
 		case models.LinearRegression:
 			predictor = linearRegression.New()
 		case models.ExponentialSmoothing:
-			// TODO
+			predictor = exponentialSmoothing.New(0.5, 0.4)
 		default:
 			// TODO: return error
 			return nil
