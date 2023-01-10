@@ -94,13 +94,13 @@ func (ds *Datasource) Prepare() (map[string][]float64, error) {
 	prepared := make(map[string][]float64, len(ds.grouped))
 
 	for group, data := range ds.grouped {
-		prepared[group] = ds.getAverageWeighted(data)
+		prepared[group] = ds.getAverageWeightedRevenue(data)
 	}
 
 	return prepared, nil
 }
 
-func (ds *Datasource) getAverageWeighted(data []*jsonData) []float64 {
+func (ds *Datasource) getAverageWeightedRevenue(data []*jsonData) []float64 {
 	weightedRevenuesByDay := make(map[int][]float64)
 	var weightSum float64
 
