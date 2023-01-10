@@ -62,5 +62,35 @@ func (ds *Datasource) GroupBy(col models.AggregateType) {
 }
 
 func (ds *Datasource) Prepare() (map[string][]float64, error) {
-	return nil, nil
+	prepared := make(map[string][]float64, len(ds.grouped))
+
+	for group, data := range ds.grouped {
+		prepared[group] = ds.getAverage(data)
+	}
+
+	return prepared, nil
+}
+
+func (ds *Datasource) getAverage(data []*models.CSVData) []float64 {
+	revenues := make([][]float64, 0, len(data))
+
+	for _, d := range data {
+		revenues = append(revenues, d.GetRevenues())
+	}
+
+	sums := make([]float64, 6)
+	daysCount := make(map[int]int)
+	for _, r := range revenues {
+		for i, rbd := range r {
+			sums[i] += rbd
+			daysCount[i]++
+		}
+	}
+
+	res := make([]float64, 0, len(sums))
+	for day, sum := range sums {
+		res = append(res, sum/float64(daysCount[day]))
+	}
+
+	return res
 }
