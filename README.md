@@ -9,3 +9,10 @@ Supported models:
 - exponential smoothing (Holt's linear trend) - es
 
 Grouping is available by country or campaign
+
+## Example usage
+```shell
+docker build -t ltv-predict .
+
+docker run ltv-predict -a "country" -m "lr" -s "json"
+```
